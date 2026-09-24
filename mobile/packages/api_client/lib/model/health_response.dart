@@ -14,25 +14,37 @@ class HealthResponse {
   /// Returns a new [HealthResponse] instance.
   HealthResponse({
     required this.status,
+    required this.version,
+    required this.state,
   });
 
   String status;
 
+  String version;
+
+  int state;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is HealthResponse &&
-    other.status == status;
+    other.status == status &&
+    other.version == version &&
+    other.state == state;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (status.hashCode);
+    (status.hashCode) +
+    (version.hashCode) +
+    (state.hashCode);
 
   @override
-  String toString() => 'HealthResponse[status=$status]';
+  String toString() => 'HealthResponse[status=$status, version=$version, state=$state]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'status'] = this.status;
+      json[r'version'] = this.version;
+      json[r'state'] = this.state;
     return json;
   }
 
@@ -49,11 +61,17 @@ class HealthResponse {
       assert(() {
         assert(json.containsKey(r'status'), 'Required key "HealthResponse[status]" is missing from JSON.');
         assert(json[r'status'] != null, 'Required key "HealthResponse[status]" has a null value in JSON.');
+        assert(json.containsKey(r'version'), 'Required key "HealthResponse[version]" is missing from JSON.');
+        assert(json[r'version'] != null, 'Required key "HealthResponse[version]" has a null value in JSON.');
+        assert(json.containsKey(r'state'), 'Required key "HealthResponse[state]" is missing from JSON.');
+        assert(json[r'state'] != null, 'Required key "HealthResponse[state]" has a null value in JSON.');
         return true;
       }());
 
       return HealthResponse(
         status: mapValueOfType<String>(json, r'status')!,
+        version: mapValueOfType<String>(json, r'version')!,
+        state: mapValueOfType<int>(json, r'state')!,
       );
     }
     return null;
@@ -102,6 +120,8 @@ class HealthResponse {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'status',
+    'version',
+    'state',
   };
 }
 

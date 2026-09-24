@@ -26,6 +26,9 @@ export interface components {
     schemas: {
         HealthResponse: {
             status: string;
+            version: string;
+            /** Format: int32 */
+            state: number;
         };
     };
     responses: never;

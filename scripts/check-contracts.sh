@@ -1,11 +1,27 @@
-CHANGED=$(git status --porcelain -- contracts/ packages/api-client-ts/src/ mobile/packages/api_client/)
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
 
-if [[ -n "$CHANGED" ]]; then
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+# Üretimden önceki hali sakla
+mkdir -p "$TMP/before"
+cp -R contracts                      "$TMP/before/contracts"
+cp -R packages/api-client-ts/src     "$TMP/before/ts"
+cp -R mobile/packages/api_client     "$TMP/before/dart"
+
+./scripts/generate-contracts.sh > /dev/null
+
+FAIL=0
+diff -rq "$TMP/before/contracts" contracts                   || FAIL=1
+diff -rq "$TMP/before/ts"        packages/api-client-ts/src  || FAIL=1
+diff -rq "$TMP/before/dart"      mobile/packages/api_client  || FAIL=1
+
+if [[ $FAIL -ne 0 ]]; then
   echo ""
-  echo "HATA: Üretilmiş sözleşme dosyaları güncel değil."
+  echo "HATA: Üretilmiş sözleşme dosyaları kaynak koddan geride."
   echo "Çalıştırın: ./scripts/generate-contracts.sh && git add -A"
-  echo ""
-  echo "$CHANGED"
   exit 1
 fi
 

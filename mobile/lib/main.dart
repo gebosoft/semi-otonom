@@ -8,7 +8,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final health = HealthResponse(status: 'healthy');
+    final health =
+        HealthResponse(status: 'healthy', version: '1.0.0', state: 1);
     return MaterialApp(
       title: 'semi-otonom',
       home: Scaffold(

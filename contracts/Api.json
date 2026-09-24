@@ -30,12 +30,21 @@
     "schemas": {
       "HealthResponse": {
         "required": [
-          "status"
+          "status",
+          "version",
+          "state"
         ],
         "type": "object",
         "properties": {
           "status": {
             "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "state": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       }
