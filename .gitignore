@@ -1,0 +1,26 @@
+# .NET
+bin/
+obj/
+*.user
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Flutter
+.dart_tool/
+build/
+.flutter-plugins*
+*.iml
+
+# Ortam
+.env
+.env.local
+*.Development.json
+*.Production.json
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
