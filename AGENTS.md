@@ -83,8 +83,16 @@ C# boş dönüyorsa sunucu kök `semi-otonom.sln` yokken başlamıştır: `pkill
   CI her durumda yeşil geçiyordu. Kapı ancak kırmızı olması gereken durumda kırmızı olduğu
   görüldüğünde kapıdır.
 - Soyutlamayı üçüncü tekrarda ekleyin, tahminle değil.
-- `.claude/skills/dotnet-backend-patterns` ve `.claude/skills/dotnet-code-review` depoda
-  yaşar; .NET tarafında kod yazmadan ya da incelemeden önce bunlara bakın.
+- Web klasör yapısı feature bazlıdır (`vite-react-best-practices/react-colocation`):
+  `src/features/<Alan>/` içine o özelliğin bileşenleri, hook'ları ve yardımcıları
+  birlikte konur. Paylaşılan, elle yazılmış bileşenler `src/components/`; `components/ui/`
+  shadcn üretimidir, oraya elle dosya eklenmez.
+- Skill'ler `.claude/skills/` altında yaşar; ilgili tarafta kod yazmadan ya da
+  incelemeden önce bakın:
+  - `dotnet-backend-patterns` — .NET yazarken (katman yapısı, Result, entity, EF/Dapper)
+  - `dotnet-code-review` — .NET incelerken (fix-before-merge / should-fix / nit ayrımı)
+  - `vite-react-best-practices` — web tarafında (Vite SPA, route splitting, VITE_ env,
+    server state). Next.js DEĞİL — SSR/RSC/`next/*` kuralları bu repoda geçersizdir.
 - **İki çözüm dosyası var, ikisi de kasıtlı.** Derlemenin ve CI'ın hedefi `api/Api.sln`'dir;
   komutlarda onu kullanın. Kökteki `semi-otonom.sln` yalnızca araçlar içindir: C# dil
   sunucusu (csharp-ls) çözümü çalışma alanı **kökünde** arar, bulamazsa hiçbir sembol
