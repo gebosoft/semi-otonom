@@ -1,3 +1,7 @@
+using Api.Endpoints;
+using SemiOtonom.Application.DependencyInjection;
+using SemiOtonom.Infrastructure.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,6 +26,9 @@ options.AddSchemaTransformer((schema, context, cancellationToken) =>
 });
 });
 
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,14 +39,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/health", () => TypedResults.Ok(new HealthResponse("healthy","1.0.0",1)))
-   .WithName("GetHealth");
+app.MapHealthEndpoints();
 
 app.Run();
-
-public record HealthResponse(string Status, string Version, int State);

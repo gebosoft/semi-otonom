@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SemiOtonom.Application</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Yalnızca Domain. Infrastructure'a veya EF Core'a referans eklenmemeli. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\SemiOtonom.Domain.csproj" />
+  </ItemGroup>
+
+  <!-- DI uzantı metodu için; Microsoft.NET.Sdk bu ikisini kendiliğinden getirmiyor. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+  </ItemGroup>
+
+</Project>
