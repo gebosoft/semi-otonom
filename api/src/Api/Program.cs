@@ -42,4 +42,4 @@ app.MapGet("/health", () => TypedResults.Ok(new HealthResponse("healthy","1.0.0"
 
 app.Run();
 
-public record HealthResponse(string Status, string Version, int State);
+public record HealthResponse(string Durum, string Version, int State);
