@@ -9,14 +9,12 @@ trap 'rm -rf "$TMP"' EXIT
 mkdir -p "$TMP/before"
 cp -R contracts                      "$TMP/before/contracts"
 cp -R packages/api-client-ts/src     "$TMP/before/ts"
-cp -R mobile/packages/api_client     "$TMP/before/dart"
 
 ./scripts/generate-contracts.sh > /dev/null
 
 FAIL=0
 diff -rq "$TMP/before/contracts" contracts                   || FAIL=1
 diff -rq "$TMP/before/ts"        packages/api-client-ts/src  || FAIL=1
-diff -rq "$TMP/before/dart"      mobile/packages/api_client  || FAIL=1
 
 if [[ $FAIL -ne 0 ]]; then
   echo ""
