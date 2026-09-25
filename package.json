@@ -1,0 +1,9 @@
+{
+  "name": "semi-otonom",
+  "private": true,
+  "workspaces": ["web", "packages/*"],
+  "scripts": {
+    "contracts": "./scripts/generate-contracts.sh",
+    "contracts:check": "./scripts/check-contracts.sh"
+  }
+}

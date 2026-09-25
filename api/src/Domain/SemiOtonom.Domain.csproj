@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Bu katman SIFIR bağımlılıkla derlenir: ne PackageReference ne ProjectReference.
+       Yeni bir referans eklemek gerekiyorsa katman sınırı yanlış yerde demektir. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SemiOtonom.Domain</RootNamespace>
+  </PropertyGroup>
+
+</Project>
