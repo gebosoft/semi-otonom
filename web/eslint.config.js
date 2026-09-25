@@ -19,4 +19,13 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // shadcn/ui tarafından üretilen dosyalar: bileşenle birlikte cva varyantlarını da
+    // dışa aktarırlar; her `shadcn add` bunu tekrar üretir. Elle düzeltmek yerine kuralı
+    // bu klasör için kapatıyoruz.
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

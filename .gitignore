@@ -25,3 +25,6 @@ build/
 .idea/
 .DS_Store
 
+
+# Claude Code: kişisel ayarlar (paylaşılan olan .claude/settings.json)
+.claude/settings.local.json
