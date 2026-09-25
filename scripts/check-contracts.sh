@@ -18,6 +18,10 @@ diff -rq "$TMP/before/ts"        packages/api-client-ts/src  || FAIL=1
 
 if [[ $FAIL -ne 0 ]]; then
   echo ""
+  echo "--- FARK ---"
+  diff -ru "$TMP/before/contracts" contracts || true
+  diff -ru "$TMP/before/ts" packages/api-client-ts/src || true
+  echo "--- /FARK ---"
   echo "HATA: Üretilmiş sözleşme dosyaları kaynak koddan geride."
   echo "Çalıştırın: ./scripts/generate-contracts.sh && git add -A"
   exit 1
