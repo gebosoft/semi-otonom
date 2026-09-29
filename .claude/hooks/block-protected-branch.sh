@@ -16,8 +16,10 @@ set -uo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 HOOK_JSON="$(cat)"
-KOMUT="$(alan '.tool_input.command')"
-[ -n "$KOMUT" ] || exit 0
+HAM="$(alan '.tool_input.command')"
+[ -n "$HAM" ] || exit 0
+# Heredoc gövdesi ve commit/PR metinleri VERİDİR, komut değil — bkz. komut_govdesi().
+KOMUT="$(komut_govdesi "$HAM")"
 
 # symbolic-ref ÖNCE: 'git rev-parse --abbrev-ref HEAD' henüz commit'i olmayan bir
 # depoda (unborn branch) hata verir ve dal boş kalırdı — yani hook sessizce

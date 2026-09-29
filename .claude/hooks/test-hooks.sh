@@ -176,6 +176,12 @@ bekle 0 "PASS: npm run build --workspace web" $H "$(j_bash 'npm run build --work
 bekle 0 "PASS[FP]: global kurulum (-g)" $H "$(j_bash 'npm i -g typescript-language-server')"
 bekle 0 "PASS[FP]: npm ls typescript" $H "$(j_bash 'npm ls typescript')"
 bekle 0 "PASS[FP]: npm run contracts" $H "$(j_bash 'npm run contracts')"
+bekle 0 "PASS[FP]: commit mesajında 'npm install'" $H \
+  "$(j_bash 'git commit -m "docs: npm install yerine npm ci kullanın"')"
+bekle 0 "PASS[FP]: heredoc gövdesinde 'npm install'" $H \
+  "$(j_bash "cat <<'EOF' > NOT.md
+Asla npm install çalıştırma.
+EOF")"
 
 # ══ İlke V — korumalı dal ═════════════════════════════════════════════════════
 baslik "İlke V — korumalı dal (block-protected-branch.sh)"
@@ -205,6 +211,28 @@ bekle 0 "PASS[FP]: ruleset OKUMA" $H \
 bekle 0 "PASS[FP]: 'main' kelimesi geçen commit mesajı" $H \
   "$(j_bash 'git commit -m "docs: main korumasını anlat"')" "$FEAT_REPO"
 bekle 0 "PASS: git status" $H "$(j_bash 'git status')" "$MAIN_REPO"
+
+# ── Regresyon: heredoc gövdesi VERİDİR ────────────────────────────────────────
+# Canlıda yaşandı: bu hook'ları anlatan PR'ın gövdesinde örnek olarak geçen
+# 'git push --force origin main' satırı, hook tarafından gerçek komut sanıldı ve
+# PR açılışı bloklandı. Yanlış pozitifin en pahalı türü: doğru işi engelliyor.
+PR_HEREDOC=$(
+  cat <<'DIS'
+gh pr create --base main --body-file - <<'EOF'
+Kanıt bloğu:
+  6. İlke V   git push origin main                     EXIT=2
+Özellik dalında git push --force-with-lease serbesttir.
+EOF
+DIS
+)
+bekle 0 "PASS[FP]: PR gövdesinde örnek komut geçiyor" $H \
+  "$(j_bash "$PR_HEREDOC")" "$FEAT_REPO"
+bekle 0 "PASS[FP]: commit mesajında 'git push --force'" $H \
+  "$(j_bash 'git commit -m "docs: git push --force origin main neden yasak"')" "$FEAT_REPO"
+bekle 2 "BLOK: heredoc ÖNCESİNDE gerçek ihlal" $H \
+  "$(j_bash "git push --force origin main <<'EOF'
+zararsız metin
+EOF")" "$FEAT_REPO"
 
 # ══ İlke I — cephe uyarısı (PostToolUse) ══════════════════════════════════════
 baslik "İlke I — cephe eksik uyarısı (warn-facade-missing.sh)"

@@ -12,8 +12,10 @@ set -uo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 HOOK_JSON="$(cat)"
-KOMUT="$(alan '.tool_input.command')"
-[ -n "$KOMUT" ] || exit 0
+HAM="$(alan '.tool_input.command')"
+[ -n "$HAM" ] || exit 0
+# Heredoc gövdesi ve commit/PR metinleri VERİDİR, komut değil — bkz. komut_govdesi().
+KOMUT="$(komut_govdesi "$HAM")"
 
 # Global kurulum → serbest
 grep -qE '(^|[[:space:]])(-g|--global)([[:space:]]|$)' <<<"$KOMUT" && exit 0

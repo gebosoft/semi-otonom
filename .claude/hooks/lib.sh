@@ -29,6 +29,24 @@ alan() {
   jq -r "${1} // empty" <<<"${HOOK_JSON:-\{\}}" 2>/dev/null
 }
 
+# Bash komutundan DÜZ METİN yüklerini ayıklar; geriye yalnızca komutun kendisi kalır.
+#
+# Neden: 'gh pr create --body-file - <<EOF ... EOF' çağrısında PR gövdesi komutun
+# içinde görünür. Gövdede 'git push --force origin main' gibi bir ÖRNEK geçtiğinde
+# kalıp eşleşmesi onu gerçek bir komut sanar. Canlıda tam olarak bu oldu: bu
+# hook'ları anlatan PR'ın kendisi İlke V tarafından bloklandı.
+#
+# İki yük türü atılır:
+#   1) heredoc gövdesi — ilk '<<' işaretinden sonrası
+#   2) -m/--message/-b/--body/--title/-t değerleri — tırnaklı düz metin
+komut_govdesi() {
+  local k="${1%%<<*}"
+  sed -E \
+    -e "s/(--message|--body|--title|-m|-b|-t)[[:space:]]+\"[^\"]*\"/\1 METIN/g" \
+    -e "s/(--message|--body|--title|-m|-b|-t)[[:space:]]+'[^']*'/\1 METIN/g" \
+    <<<"$k"
+}
+
 # Write → .content, Edit → .new_string. İkisi de yoksa boş.
 degisen_icerik() {
   jq -r '.tool_input.content // .tool_input.new_string // empty' \
