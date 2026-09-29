@@ -4,6 +4,11 @@
     "typescript-lsp@claude-plugins-official": true
   },
   "permissions": {
+    "allow": [
+      "Bash(dotnet run --project api/src/Api:*)",
+      "Bash(dotnet watch --project api/src/Api:*)",
+      "Bash(dotnet build api/Api.sln:*)"
+    ],
     "deny": [
       "Edit(contracts/**)",
       "Write(contracts/**)",
