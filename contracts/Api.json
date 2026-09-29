@@ -13,38 +13,7 @@
         "operationId": "GetHealth",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "HealthResponse": {
-        "required": [
-          "status",
-          "version",
-          "state"
-        ],
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "state": {
-            "type": "integer",
-            "format": "int32"
+            "description": "OK"
           }
         }
       }
