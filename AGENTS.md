@@ -10,6 +10,10 @@ uç nokta `/health` — geri kalan, ilk özellik için önceden kurulmuş iskele
 commit mesajları, kod yorumları ve script çıktıları Türkçedir; tanımlayıcılar ve genel API
 yüzeyi İngilizce.
 
+Yönetişim kuralları `.specify/memory/constitution.md` içindedir. Bu dosya "nasıl çalışır"
+der; anayasa "neye asla izin verilmez" der. Çeliştiklerinde anayasa geçerlidir ve bu dosya
+düzeltilir.
+
 ## Komutlar
 
 Ön koşul: .NET SDK 10.0.101 (`global.json` sabitler), Node 22 (CI'de sabit).
@@ -50,6 +54,12 @@ Neden böyle: sözleşme uyumsuzluğu çalışma zamanında değil, derleme zama
 sözleşme değişikliği diff'te görünür ve CI eskimiş üretimi yakalayabilir:
 `check-contracts.sh` üretimi yeniden koşturup sonucu diff'ler, fark varsa `exit 1`.
 
+**Cephe zorunludur (Anayasa İlke I).** Yeni eklenen her uç noktanın yanıt tipi için
+`src/index.ts` içine bir takma ad yazılır. Sebep deneyle doğrulandı: cephede dereference
+edilmeyen bir uç noktanın şeması kaybolursa hiçbir yerde hata çıkmaz — `web` job'ı yeşil
+kalır, istemci tipi sessizce `never` olur. Zincirin sessizce koptuğunu fark eden tek
+mekanizma bu dereference'tır.
+
 ## Sembol arama
 
 Sembol tanımı/kullanımı ararken grep yerine LSP kullanın (`goToDefinition`,
@@ -63,25 +73,34 @@ C# boş dönüyorsa sunucu kök `semi-otonom.sln` yokken başlamıştır: `pkill
 ## Konvansiyonlar
 
 - Commit: Conventional Commits, Türkçe küçük harfli özet — `feat(web): ...`, `fix(ci): ...`.
-  Dal adları `feat/...`, `fix/...`. `main`'e PR ile girilir (ruleset korumalı).
+  Dal adları `feat/...`, `fix/...`.
+- **`main`'e yalnızca PR ile girilir.** Ruleset (`main protection`, aktif, bypass listesi
+  boş) dört kural işletir: `pull_request`, `deletion`, `non_fast_forward` ve
+  `required_status_checks` (`contracts`, `api`, `web`; strict). Doğrudan push reddedilir;
+  merge için üç check'in de yeşil olması gerekir. Zorunlu onay sayısı 0'dır — tek kişilik
+  çalışmada kendi PR'ınızı onaylayamayacağınız için; kural yine de "PR olmadan merge yok"
+  garantisini verir.
 - Katman sınırları sert: Domain hiçbir şeye referans vermez; Application yalnız Domain'e
   bakar (Infrastructure'a ve EF Core'a asla); `Program.cs` katman içini bilmez — tek giriş
   noktaları `AddApplication` / `AddInfrastructure`. Yeni referans gerekiyorsa sınır yanlış
-  yerdedir.
+  yerdedir. Sınır `using` ile değil, `.csproj` referansıyla korunur.
 - Beklenen iş kuralı hataları için `Result<T>` / `Error` döndürülür; exception akış kontrolü
   aracı değildir. (`Result`/`Error` → HTTP eşlemesi henüz yok; ilk özellikte yazılacak.)
 - Kimlikler `Guid.CreateVersion7()` ile üretilir. `Entity` append-only kayıtlar,
   `AuditableEntity` güncellenebilir kayıtlar içindir; `UpdatedAt` interceptor'da damgalanır.
-- **Her uç nokta named bir response type döndürür**: `Results.Ok` değil `TypedResults.Ok`,
-  anonim tip değil `record`. Anonim tip OpenAPI şemasına çıkmaz; istemci tipleri `undefined`
-  olur ve sözleşme zinciri sessizce işlevsizleşir.
+- **Her uç nokta adlandırılmış yanıt tipi döndürür**: `Results.Ok` değil `TypedResults.Ok`,
+  anonim tip değil `sealed record`. Anonim tipte 200 yanıtı `{"description": "OK"}`'e iner,
+  `components` boşalır, TypeScript `content?: never` üretir — ve üretim komutu yine `EXIT=0`
+  döner. Kayıp sessizdir; bu yüzden kural kapıya değil koda bağlıdır.
 - Uç nokta yazımı: `static class *Endpoints` + `IEndpointRouteBuilder` uzantısı.
   `WithName(...)` değeri OpenAPI `operationId`'sidir ve TS tarafında anahtar olur.
-- **Bir kapı (CI check, hook, script) yazıldığında bilerek bozularak test edilir ve ÇIKIŞ
-  KODU kontrol edilir** (`echo $?`). Yeşil geçmesi kapının çalıştığını kanıtlamaz:
-  `check-contracts.sh` bir dönem farkı buluyor, "HATA" yazıyor, ama `exit 1` içermediği için
-  CI her durumda yeşil geçiyordu. Kapı ancak kırmızı olması gereken durumda kırmızı olduğu
-  görüldüğünde kapıdır.
+- **Bir kapı (CI check, hook, script, test) eklendiğinde bilerek bozularak test edilir,
+  ÇIKIŞ KODUNUN 1 olduğu görülür** (`echo $?`) **ve bu çıktı PR açıklamasına yazılır.**
+  Yeşil geçmesi kapının çalıştığını kanıtlamaz: `check-contracts.sh` bir dönem farkı
+  buluyor, "HATA" yazıyor, ama `exit 1` içermediği için CI her durumda yeşil geçiyordu
+  (commit `8fb270c`).
+- **Boş gövdeli veya hiçbir davranışı doğrulamayan test eklenmez.** "Derleniyor" veya
+  "geçiyor" yeterli değildir; testin ne doğruladığı gösterilmelidir.
 - Soyutlamayı üçüncü tekrarda ekleyin, tahminle değil.
 - Web klasör yapısı feature bazlıdır (`vite-react-best-practices/react-colocation`):
   `src/features/<Alan>/` içine o özelliğin bileşenleri, hook'ları ve yardımcıları
@@ -110,7 +129,7 @@ C# boş dönüyorsa sunucu kök `semi-otonom.sln` yokken başlamıştır: `pkill
 - `scripts/generate-contracts.sh` içindeki `--no-incremental` bayrağı — zorunlu, aşağıya
   bakın.
 - Var olan `WithName(...)` değerleri — değişirse üretilmiş TS anahtarları kayar.
-- `global.json` ve `ci.yml` sürüm sabitleri — oynatmadan önce sorun.
+- `global.json`, `package-lock.json` ve `ci.yml` sürüm sabitleri — oynatmadan önce sorun.
 
 ## Bilinen tuzaklar
 
@@ -130,29 +149,30 @@ C# boş dönüyorsa sunucu kök `semi-otonom.sln` yokken başlamıştır: `pkill
   `"type": ["integer","string"]`, 3.0'da `anyOf` olarak serileşir; kod üreteçleri ikisini de
   ya string'e düşürür ya da bozuk tip üretir. Sürüm düşürmek tek başına çözmez; transformer
   şarttır.
-- **Araç sürümleri sabitlenir.** `global.json` (SDK), `package-lock.json` (npm), tam sürüm
-  (`openapi-typescript`). Aynı girdiden farklı çıktı üreten bir kapı, kapı değildir.
+- **Araç sürümleri sabitlenir.** `global.json` (SDK 10.0.101), `package-lock.json` (npm),
+  ve `openapi-typescript` caret'sız `"7.13.0"`. `npm install` değil `npm ci` kullanın.
+  Aynı girdiden farklı çıktı üreten bir kapı, kapı değildir.
 - `npm run contracts` içeride **dotnet derlemesi** yapar — Node-only bir ortamda çalışmaz.
 - `web/src/components/ui/` shadcn/ui'nin ürettiği koddur; `react-refresh/only-export-components`
   o klasör için `eslint.config.js`'te kapalıdır. Dışarıda kural aktiftir — elle yazdığınız
   bileşenleri oraya koymayın.
-- TypeScript **tek sürüm** olarak kökte sabitlenmiştir (`~6.0.2`); workspace'ler ve dil
-  sunucusu aynı derleyiciyi kullanır. Kök `devDependencies`'teki girdiyi silmeyin — npm o
-  zaman `openapi-typescript`'in `^5.x` peer'i yüzünden köke 5.x indirir. `npm ls typescript`
-  "invalid" uyarısı beklenendir; üretim TS 6 ile doğrulanmıştır.
+- TypeScript **tek sürüm** olarak kökte sabitlenmiştir; workspace'ler ve dil sunucusu aynı
+  derleyiciyi kullanır (bugün 6.0.3'e çözülüyor). Kök `devDependencies`'teki girdiyi
+  silmeyin — npm o zaman `openapi-typescript`'in `^5.x` peer'i yüzünden köke 5.x indirir.
+  `npm ls typescript` "invalid" uyarısı beklenendir.
 - Kökte ve `web/` altında iki `package-lock.json` var; geçerli olan **köktekidir**. npm
   komutlarını kökten `--workspace` ile çalıştırın.
 
 ## Açık işler
 
-Bunlar bilinen eksiklerdir; `BACKLOG.md` ile senkron tutulur, çözülünce buradan silinir.
+Bunlar bilinen eksiklerdir. Kabul kriterleri `BACKLOG.md`'de, ilkelerle bağlantıları
+anayasanın borç tablosundadır; çözülünce üç yerden birden silinir.
 
-- API adresi `web/src/App.tsx` içinde gömülü (`http://localhost:5027`); `VITE_*` ortam
-  değişkeni ve `.env.example` yok.
-- `@tanstack/react-query` ve `react-router` kurulu ama hiçbir yerden import edilmiyor —
-  provider ve router yok.
-- **Çalıştırılabilir test yok.** Web'de `vitest` kurulu ama `test` script'i, config'i ve tek
-  bir test dosyası yok; `Api.Tests` boş bir placeholder `[Fact]`'ten ibaret. Yani CI'daki
-  `api` job'ı bugün hiçbir şey doğrulamıyor.
-- Ölü artıklar: iki `openapitools.json` (kullanılan araç openapi-typescript),
-  `Api.http` içindeki `/weatherforecast/`, `.gitignore`'daki Flutter satırları.
+- **B1 — Çalıştırılabilir test yok.** Web'de `vitest` kurulu ama `test` script'i, config'i
+  ve tek bir test dosyası yok; `api/tests/Api.Tests/UnitTest1.cs` boş gövdeli bir `[Fact]`.
+  Yani CI'daki `api` job'ı bugün hiçbir davranışı doğrulamıyor. `Api.Tests.csproj` içinde
+  `Microsoft.AspNetCore.Mvc.Testing` da yok. (Anayasa İlke III — Faz 1'den önce kapatılmalı.)
+- **B2 — API adresi koda gömülü.** `web/src/App.tsx:8` `http://localhost:5027` literali
+  taşıyor; `VITE_*` ortam değişkeni ve `.env.example` yok. (İlke VI — Faz 1'den önce.)
+- **B6 — `Result<T>` → HTTP eşlemesi yok.** Hata gövdesi de adlandırılmış `record` olmalı.
+  (İlke II.)

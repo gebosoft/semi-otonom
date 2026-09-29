@@ -1,52 +1,3 @@
-<!--
-SYNC IMPACT REPORT — bu blok inceleme içindir, commit'ten önce silinir.
-
-Sürüm değişimi: (doldurulmamış şablon) → 1.0.0
-Gerekçe: Anayasa ilk kez gerçek içerikle onaylanıyor; önceki dosya yalnızca
-placeholder taşıyordu, dolayısıyla karşılaştırılacak bir önceki sürüm yok.
-
-Eklenen ilkeler:
-  I.   Sözleşme zinciri tek yönlüdür
-  II.  Her uç nokta adlandırılmış yanıt tipi döndürür
-  III. Kapı, kırmızı olduğu görülene kadar kapı değildir
-  IV.  Katman sınırları proje referansı seviyesinde uygulanır
-  V.   main'e giden tek yol PR'dır ve kapılar bypass edilmez
-  VI.  Sır ve ortama bağlı adres depoya girmez
-  VII. Belirlenimcilik: aynı girdi aynı çıktıyı üretir
-
-Eklenen bölümler: Doğrulama Sınırları ve Borç Kaydı; Değişiklik Akışı; Governance
-Kaldırılan bölümler: yok (şablonun beş jenerik placeholder ilkesi somutlaştırıldı)
-
-Doğrulama sırasında bulunan, AGENTS.md ile kod arasındaki üç sapma — ilkelerde
-borç olarak kayıtlı, AGENTS.md düzeltilmeli:
-  1. AGENTS.md `--no-incremental` bayrağını zorunlu ilan ediyor; scripts/generate-contracts.sh:6
-     bu bayrağı içermiyor.
-  2. AGENTS.md openapi-typescript'in "tam sürüm" sabitlendiğini söylüyor; gerçek spec
-     `^7.13.0` aralığı (packages/api-client-ts/package.json:13).
-  3. AGENTS.md "main'e PR ile girilir (ruleset korumalı)" diyor; ruleset 23933135'te
-     `pull_request` kuralı yok — PR yalnızca konvansiyon.
-
-Ertelenen TODO: yok. Tüm placeholder'lar dolduruldu.
-
----
-
-Sürüm değişimi: 1.0.0 → 1.0.1 (PATCH)
-Gerekçe: İki borç kapatıldı ve tablodan silindi. Governance/Sürümleme bölümü
-"bir borcun kapanıp tablodan silinmesi PATCH'tir" diyor; hiçbir ilkenin MUST dili
-değişmedi, yalnızca İlke VII'nin kanıtı tazelendi.
-
-Değişen ilke: VII — "Bilinen iki boşluk" paragrafı kaldırıldı, kanıt yeni dosya
-satırlarıyla ve iki yönlü kapı doğrulamasıyla değiştirildi. Başlık ve kural aynı.
-Değişen bölüm: Doğrulama Sınırları ve Borç Kaydı — D1 ve D2 satırları silindi,
-"Kapanmış borçlar" notu eklendi.
-
-Kapatan kod değişikliği (bu belgenin dışında):
-  - scripts/generate-contracts.sh:9 → `--no-incremental` eklendi (+ gerekçe yorumu)
-  - packages/api-client-ts/package.json:13 → `^7.13.0` → `7.13.0`
-  - package-lock.json → yalnızca ilgili spec satırı (tek satırlık diff)
-AGENTS.md değiştirilmedi: yukarıdaki 1 ve 2 numaralı sapmalarda belge zaten doğruydu,
-kod belgeye çekildi. 3 numaralı sapma (D3) açık kalmaya devam ediyor.
--->
 
 # semi-otonom Anayasası
 
@@ -162,12 +113,6 @@ zorunlu kılıyor. `main`'in first-parent geçmişinde `d59e210`'dan bugüne ine
 merge commit'i; doğrudan inen tek üç commit depo kurulumuna ait (`157797f`, `33a34d9`,
 `f261b69`).
 
-**Bilinen boşluk — borç olarak kayıtlı.** Ruleset'te `pull_request` kuralı **yoktur**;
-dolayısıyla zorunlu inceleme (approval) ve "PR şart" kuralı bugün platform tarafından
-uygulanmıyor. `AGENTS.md`'deki "ruleset korumalı" ifadesi bu yönüyle gerçeğin ilerisindedir.
-Bu ilke bu yüzden gevşetilmez; boşluk kapatılana kadar konvansiyon olarak uygulanır ve
-D3 borcu olarak izlenir.
-
 **Gerekçe.** Bu kural olmasaydı sözleşme, katman ve test kapılarının hiçbirinin anlamı
 kalmazdı: üç ilke de yalnızca CI çalıştığı sürece geçerlidir, CI ise yalnızca PR akışında
 tetiklenir (`.github/workflows/ci.yml:3-6`).
@@ -189,9 +134,6 @@ ve `AllowedHosts` içeriyor — bugün sır yok.
 1. `web/src/App.tsx:8` API adresini literal olarak taşıyor (`http://localhost:5027`);
    `VITE_*` değişkeni ve `.env.example` yok. Bu `BACKLOG.md` B2'dir ve Faz 1'den önce
    kapatılmalıdır.
-2. `.gitignore` kalıbı dar: `git check-ignore -v web/.env.production` **hiçbir kural
-   döndürmüyor** — yani o dosya yanlışlıkla commit edilebilir. `.env` kalıbı `.env*`
-   biçimine genişletilmelidir.
 
 **Gerekçe.** Bugün gömülü olan tek şey zararsız bir localhost adresi. Ama ilk gerçek
 özellikte her çağrı bu adresi kullanacak; literal dağıldıktan sonra toplamak, tek noktada
@@ -245,8 +187,6 @@ Açık borçlar ve bağlı oldukları ilkeler:
 | B1 | Çalıştırılabilir test yok | III | `BACKLOG.md` |
 | B2 | API adresi koda gömülü, `.env.example` yok | VI | `BACKLOG.md` |
 | B6 | `Result<T>` → HTTP eşlemesi yok | II | `BACKLOG.md` |
-| D3 | Ruleset'te `pull_request` kuralı yok | V | bu belge |
-| D4 | `.gitignore` `.env*` kalıbını kapsamıyor | VI | bu belge |
 
 `B1` ve `B2` ilk gerçek özellikten (Faz 1) önce **kapatılmalıdır (MUST)**. `D3` ve `D4` bir
 sonraki altyapı PR'ında kapatılmalıdır (MUST); `D3` depo ayarında, `D4` tek satırlık bir
@@ -256,6 +196,7 @@ Kapanmış borçlar (v1.0.1): **D1** — `generate-contracts.sh:9` artık `--no-
 taşıyor; **D2** — `openapi-typescript` spec'i `^7.13.0` yerine `7.13.0`. İkisi de
 `AGENTS.md`'nin zaten iddia ettiği durumdu; kod belgeye çekildiği için `AGENTS.md`
 değiştirilmedi.
+(v1.0.2): **D3** — ruleset'e pull_request kuralı eklendi; **D4** — .gitignore .env* + !.env.example
 
 ## Değişiklik Akışı
 
@@ -345,4 +286,4 @@ Borç kaydetmek ilkeyi ihlal etmenin meşru yolu **değildir**; ihlali görünü
 yoludur. Kaydedilmiş bir borç, kapatılana kadar her yeni PR'da o ilkeyi ihlal etme hakkı
 vermez.
 
-**Version**: 1.0.1 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
+**Version**: 1.0.2 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
