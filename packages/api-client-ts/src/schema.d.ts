@@ -23,7 +23,14 @@ export interface paths {
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        HealthResponse: {
+            status: string;
+            version: string;
+            /** Format: int32 */
+            state: number;
+        };
+    };
     responses: never;
     parameters: never;
     requestBodies: never;
@@ -46,7 +53,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["HealthResponse"];
+                };
             };
         };
     };
