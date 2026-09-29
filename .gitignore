@@ -15,10 +15,11 @@ build/
 *.iml
 
 # Ortam
-.env
-.env.local
+
 *.Development.json
 *.Production.json
+.env*
+!.env.example
 
 # IDE
 .vscode/
