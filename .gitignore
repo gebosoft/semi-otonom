@@ -22,7 +22,9 @@ build/
 !.env.example
 
 # IDE
-.vscode/
+# .vscode içinde kişisel ayarlar (settings.json) yoksayılır; F5 debug yapılandırması
+# ise paylaşılır — depoyu klonlayan herkeste aynı profil ve aynı port çalışsın diye.
+.vscode/*
 .idea/
 .DS_Store
 

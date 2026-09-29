@@ -1,0 +1,37 @@
+name: claude-review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            Bu PR'ı incele. Kodu yazan ajanın gerekçesini görmüyorsun —
+            yalnızca diff'e ve repodaki belgelere bak.
+
+            Önce .specify/memory/constitution.md ve AGENTS.md'yi oku.
+            .NET değişikliği varsa .claude/skills/dotnet-code-review'e bak.
+
+            Anayasanın "Her PR'da denetlenecek uyum listesi" bölümündeki
+            maddeleri tek tek kontrol et; her biri için ✅ / ❌ / N/A yaz.
+
+            Bulguları üç başlıkta sun:
+            1. Must-fix before merge
+            2. Should-fix
+            3. Nits
+            Must-fix'leri nit duvarının içine gömme.
+
+            Onaylama veya reddetme yetkin yok; yalnızca yorum bırak.
