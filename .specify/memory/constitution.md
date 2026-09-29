@@ -178,7 +178,10 @@ CI bugün şunları **doğrulamaz**:
   dönüyor. `vitest`, `jsdom` ve `@testing-library/*` kurulu ama kullanılmıyor.
 - **Lint'i.** `.github/workflows/ci.yml:45-56` `web` job'ında `npm run lint` yok. Kökte
   `lint` script'i de yok (`package.json:8-11`). Lint yalnızca yerelde çalışır.
-- **PR incelemesini.** İlke V'teki `pull_request` kuralı boşluğu.
+- **İnsan incelemesini.** Ruleset'teki `pull_request` kuralı PR'ı zorunlu kılar, ama
+  `required_approving_review_count: 0`'dır — merge için kimsenin onayı gerekmez. Yani
+  "PR olmadan merge yok" platformca garantilidir; "biri baktı" garantili DEĞİLDİR.
+  Governance'taki uyum listesi bu yüzden bir konvansiyondur, bir kapı değil.
 
 Açık borçlar ve bağlı oldukları ilkeler:
 
@@ -188,15 +191,17 @@ Açık borçlar ve bağlı oldukları ilkeler:
 | B2 | API adresi koda gömülü, `.env.example` yok | VI | `BACKLOG.md` |
 | B6 | `Result<T>` → HTTP eşlemesi yok | II | `BACKLOG.md` |
 
-`B1` ve `B2` ilk gerçek özellikten (Faz 1) önce **kapatılmalıdır (MUST)**. `D3` ve `D4` bir
-sonraki altyapı PR'ında kapatılmalıdır (MUST); `D3` depo ayarında, `D4` tek satırlık bir
-`.gitignore` değişikliğidir.
+`B1` ve `B2` ilk gerçek özellikten (Faz 1) önce **kapatılmalıdır (MUST)**. Bu üçü dışında
+açık borç yoktur; `D1`–`D4` kapandı.
 
-Kapanmış borçlar (v1.0.1): **D1** — `generate-contracts.sh:9` artık `--no-incremental`
-taşıyor; **D2** — `openapi-typescript` spec'i `^7.13.0` yerine `7.13.0`. İkisi de
-`AGENTS.md`'nin zaten iddia ettiği durumdu; kod belgeye çekildiği için `AGENTS.md`
-değiştirilmedi.
-(v1.0.2): **D3** — ruleset'e pull_request kuralı eklendi; **D4** — .gitignore .env* + !.env.example
+Kapanmış borçlar:
+
+- **v1.0.1 — D1:** `generate-contracts.sh:9` artık `--no-incremental` taşıyor.
+  **D2:** `openapi-typescript` spec'i `^7.13.0` yerine `7.13.0`. İkisi de `AGENTS.md`'nin
+  zaten iddia ettiği durumdu; kod belgeye çekildiği için `AGENTS.md` değiştirilmedi.
+- **v1.0.2 — D3:** Ruleset'e `pull_request` kuralı eklendi; `main`'e PR'sız merge artık
+  platformca reddediliyor. **D4:** `.gitignore:21-22` `.env*` + `!.env.example` oldu;
+  `git check-ignore -v web/.env.production` artık kuralı döndürüyor.
 
 ## Değişiklik Akışı
 
@@ -286,4 +291,4 @@ Borç kaydetmek ilkeyi ihlal etmenin meşru yolu **değildir**; ihlali görünü
 yoludur. Kaydedilmiş bir borç, kapatılana kadar her yeni PR'da o ilkeyi ihlal etme hakkı
 vermez.
 
-**Version**: 1.0.2 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
+**Version**: 1.0.3 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
