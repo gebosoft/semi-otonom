@@ -1,0 +1,30 @@
+name: Yeni özellik
+description: Ürün tarafından gelen özellik talebi
+labels: ["feature"]
+body:
+  - type: textarea
+    attributes:
+      label: Ne istiyorum
+      placeholder: Müşteri ürünleri listede görebilsin.
+    validations: { required: true }
+
+  - type: textarea
+    attributes:
+      label: Kim için
+      placeholder: Siteye ilk gelen ziyaretçi.
+    validations: { required: true }
+
+  - type: textarea
+    attributes:
+      label: Başarılı sayarım eğer
+      description: Gözlemlenebilir koşullar yazın. "Hızlı olsun" değil, "3 saniyede yüklensin".
+      placeholder: |
+        - Ana sayfada en az 12 ürün görünüyor
+        - Her üründe görsel, isim, fiyat var
+        - Telefonda tek sütun, masaüstünde üç sütun
+    validations: { required: true }
+
+  - type: textarea
+    attributes:
+      label: Kapsam dışı
+      placeholder: Filtreleme, arama, sıralama, sepete ekleme.
